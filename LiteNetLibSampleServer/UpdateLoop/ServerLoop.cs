@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using LiteNetLibSampleServer.Input;
 using PoorMansECS.Systems;
+using Server.Input;
 
-namespace LiteNetLibSampleServer.UpdateLoop {
+namespace Server.UpdateLoop {
     public class ServerLoop : IInputCommandsReceiver {
         private readonly List<IUpdateable> _updateables;
         private bool _isRunning;
@@ -14,7 +14,7 @@ namespace LiteNetLibSampleServer.UpdateLoop {
             _updateables.AddRange(updateables);
         }
 
-        public void Run() {
+        public void RunMainLoop() {
             _isRunning = true;
             const int delta = 15;
             while (_isRunning) {
@@ -27,6 +27,10 @@ namespace LiteNetLibSampleServer.UpdateLoop {
             if (command.KeyInfo.Key == ConsoleKey.E) {
                 _isRunning = false;
             }
+        }
+
+        public void AddUpdateable(IUpdateable updateable) {
+            _updateables.Add(updateable);
         }
     }
 }

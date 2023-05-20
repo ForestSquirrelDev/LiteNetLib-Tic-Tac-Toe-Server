@@ -4,8 +4,9 @@ using System.Net.Sockets;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using PoorMansECS.Systems;
+using Server.Shared.Network;
 
-namespace LiteNetLibSampleServer.Connection {
+namespace Server.Connection {
     public class ConnectionManager : INetEventListener, IUpdateable {
         private readonly NetManager _server;
         private readonly NetDataWriter _writer;
@@ -17,11 +18,14 @@ namespace LiteNetLibSampleServer.Connection {
             _packetsPipe = packetsPipe;
         }
 
-        public void Init() {
+        public void Start() {
             _server.Start(9050);
         }
 
         public void OnPeerConnected(NetPeer peer) {
+            _writer.Reset();
+            _writer.Put("Hello client");
+            peer.Send(_writer, DeliveryMethod.ReliableOrdered);
             Console.WriteLine($"New connection: {peer.EndPoint.Address}");
         }
 

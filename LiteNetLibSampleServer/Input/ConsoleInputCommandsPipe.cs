@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using PoorMansECS.Systems;
 
-namespace LiteNetLibSampleServer.Input {
+namespace Server.Input {
     public class ConsoleInputCommandsPipe : IUpdateable {
         private readonly HashSet<IInputCommandsReceiver> _receivers = new();
 
