@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using PoorMansECS.Components;
+﻿using PoorMansECS.Components;
 using Server.Game.Entities;
 
 namespace Server.Game.Components {

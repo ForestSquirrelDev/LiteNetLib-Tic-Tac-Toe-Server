@@ -10,6 +10,18 @@ namespace Server.Shared.Network {
             }
         }
 
+        public readonly struct GameStartedPacket {
+            public int GridSizeX { get; }
+            public int GridSizeY { get; }
+            public int GameRole { get; }
+
+            public GameStartedPacket(int gridSizeX, int gridSizeY, int gameRole) {
+                GridSizeX = gridSizeX;
+                GridSizeY = gridSizeY;
+                GameRole = gameRole;
+            }
+        }
+
         public readonly struct JoinPacket { }
     }
 }

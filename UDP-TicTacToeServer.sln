@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33712.159
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LiteNetLibSampleServer", "LiteNetLibSampleServer\LiteNetLibSampleServer.csproj", "{2D079F17-4AE8-4246-B04A-11380FF43F29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UDP-TicTacToe-Server", "LiteNetLibSampleServer\UDP-TicTacToe-Server.csproj", "{2D079F17-4AE8-4246-B04A-11380FF43F29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerShared", "ServerShared\ServerShared.csproj", "{A06F7FA8-CD7A-444A-A7A2-B8FF4564B8B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerShared", "ServerShared\ServerShared.csproj", "{A06F7FA8-CD7A-444A-A7A2-B8FF4564B8B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
