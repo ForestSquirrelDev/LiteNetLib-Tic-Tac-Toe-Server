@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using PoorMansECS.Components;
-using PoorMansECS.Entities;
+﻿using PoorMansECS.Entities;
 
 namespace Server.Game.Entities {
-    public class Room : Entity {
-        public Room(IEnumerable<IComponentData> components) : base(components) { }
-    }
+    public class Room : Entity { }
 }

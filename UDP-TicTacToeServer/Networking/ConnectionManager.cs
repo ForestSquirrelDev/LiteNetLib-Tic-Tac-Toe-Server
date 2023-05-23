@@ -1,18 +1,18 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using PoorMansECS.Systems;
-using Server.Shared.Network;
+using ServerShared.Shared.Network;
 
-namespace Server.Connection {
+namespace Server.Connection
+{
     public class ConnectionManager : INetEventListener, IUpdateable {
         private readonly NetManager _server;
         private readonly NetDataWriter _writer;
-        private readonly PacketsPipe _packetsPipe;
+        private readonly IncomingPacketsPipe _packetsPipe;
 
-        public ConnectionManager(PacketsPipe packetsPipe) {
+        public ConnectionManager(IncomingPacketsPipe packetsPipe) {
             _server = new NetManager(this);
             _writer = new NetDataWriter(true);
             _packetsPipe = packetsPipe;

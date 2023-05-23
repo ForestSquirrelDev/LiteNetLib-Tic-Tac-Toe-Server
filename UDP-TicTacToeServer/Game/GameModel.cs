@@ -1,25 +1,28 @@
-﻿using Server.Connection;
-using PoorMansECS.Systems;
-using Server.Game.Systems;
+﻿using PoorMansECS.Systems;
 using Server.Input;
+using PoorMansECS;
+using Game.Systems;
+using ServerShared.Shared.Network;
 using Server.Shared.Network;
 
-namespace Server.Game {
+namespace Server.Game
+{
     public class GameModel : IUpdateable {
-        private readonly PoorMansECS.Entities.Entities _entities;
-        private readonly SystemsManager _systemsManager;
+        public World World { get; }
 
-        public GameModel(PacketsPipe packetsPipe, ConsoleInputCommandsPipe inputCommandsPipe) {
-            _entities = new PoorMansECS.Entities.Entities();
-            _systemsManager = new SystemsManager(packetsPipe, _entities);
+        public GameModel(IncomingPacketsPipe incomingPacketsPipe, OutgoingPacketsPipe outgoingPacketsPipe, ConsoleInputCommandsPipe inputCommandsPipe) {
+            World = new World();
+
+            var systemsBuilder = new SystemsBuilder(World, incomingPacketsPipe, outgoingPacketsPipe);
+            systemsBuilder.Build();
         }
 
         public void Start() {
-            _systemsManager.Start();
+            World.Start();
         }
 
         public void Update(float delta) {
-            _systemsManager.Update(delta);
+            World.Update(delta);
         }
     }
 }
