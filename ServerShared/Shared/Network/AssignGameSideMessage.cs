@@ -3,7 +3,7 @@ using ServerShared.Shared.Network;
 
 namespace Server.Shared.Network {
     public struct AssignGameSideMessage : IMessage {
-        public readonly MessageType Type => MessageType.AssignGameSideMessage;
+        public MessageType Type => MessageType.AssignGameSideMessage;
         public byte GameSide { get; private set; }
 
         public AssignGameSideMessage(byte gameSide) {

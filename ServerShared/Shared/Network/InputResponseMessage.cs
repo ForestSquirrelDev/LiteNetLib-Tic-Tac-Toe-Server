@@ -2,7 +2,7 @@
 
 namespace ServerShared.Shared.Network {
     public struct InputResponseMessage : IMessage {
-        public readonly MessageType Type => MessageType.InputResponseMessage;
+        public MessageType Type => MessageType.InputResponseMessage;
         public bool Success { get; private set; }
         public Reason ResponseReason { get; private set; }
 

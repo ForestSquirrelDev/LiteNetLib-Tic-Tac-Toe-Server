@@ -1,11 +1,13 @@
 ﻿using LiteNetLib;
 using Server.Shared.Network;
+using System;
+using System.Collections.Generic;
 using static ServerShared.Shared.Network.Packets;
 
 namespace ServerShared.Shared.Network {
     public class IncomingPacketsPipe
     {
-        private readonly Dictionary<MessageType, HashSet<INetMessageListener>> _listeners = new();
+        private readonly Dictionary<MessageType, HashSet<INetMessageListener>> _listeners = new Dictionary<MessageType, HashSet<INetMessageListener>>();
 
         public void ProcessMessage(NetPeer peer, NetPacketReader reader, DeliveryMethod deliveryMethod)
         {
@@ -42,15 +44,14 @@ namespace ServerShared.Shared.Network {
             var communicationInfo = new CommunicationInfo();
             communicationInfo.Deserialize(reader);
 
-            IMessage? message = messageType switch
-            {
-                MessageType.JoinRequestMessage => new JoinRequestMessage(),
-                MessageType.GameStartedMessage => new GameStartedMessage(),
-                MessageType.AssignGameSideMessage => new AssignGameSideMessage(),
-                _ => default
-            };
+            IMessage message = null;
+            if (messageType == MessageType.JoinRequestMessage)
+                message = new JoinRequestMessage();
+            if (messageType == MessageType.GameStartedMessage)
+                message = new GameStartedMessage();
+            if (messageType == MessageType.AssignGameSideMessage)
+                message = new AssignGameSideMessage();
             message.Deserialize(reader);
-
 
             return new MessageWrapper(peer, communicationInfo, message, deliveryMethod);
         }

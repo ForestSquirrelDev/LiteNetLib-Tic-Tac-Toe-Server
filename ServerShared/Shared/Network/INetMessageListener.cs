@@ -2,6 +2,6 @@
 {
     public interface INetMessageListener
     {
-        public void ReceiveMessage(MessageWrapper messageWrapper);
+        void ReceiveMessage(MessageWrapper messageWrapper);
     }
 }

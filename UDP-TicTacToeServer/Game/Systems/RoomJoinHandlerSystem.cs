@@ -1,4 +1,6 @@
-﻿using LiteNetLib;
+﻿using System;
+using System.Collections.Generic;
+using LiteNetLib;
 using PoorMansECS.Components;
 using PoorMansECS.Systems;
 using Server.Game.Components;
@@ -34,16 +36,15 @@ namespace Server.Game.Systems {
         }
 
         private void ProcessJoin(MessageWrapper joinMessage) {
-            var room = _context.Entities.GetFirst<Room>();
+            var room = _context.World.Entities.GetFirst<Room>();
             var joinedPlayers = room.GetComponent<JoinedPlayersComponent>();
             if (joinedPlayers.JoinedPlayers.Count >= 2) {
                 Console.WriteLine("Error: 2 players already joined");
                 return;
             }
 
-            var player = CreateNewPlayer(joinedPlayers.JoinedPlayers.Count, joinMessage.AssociatedPeer);
+            var player = CreateNewPlayer(joinedPlayers.JoinedPlayers.Count, joinMessage.AssociatedPeer, _context);
             joinedPlayers.JoinedPlayers.Add(player);
-            _context.Entities.Add(player);
 
             Console.WriteLine($"Player {joinMessage.AssociatedPeer.Id} joined");
 
@@ -54,12 +55,10 @@ namespace Server.Game.Systems {
                 new AssignGameSideMessage((byte)player.GetComponent<GameSideComponent>().GameSide));
         }
 
-        private Player CreateNewPlayer(int joinedPlayersCount, NetPeer peer) {
-            var playerComponents = new List<IComponentData> {
-                new GameSideComponent(joinedPlayersCount == 0 ? GameSide.Cross : GameSide.Nought),
-                new AssociatedPeerComponent(peer)
-            };
-            var player = new Player(playerComponents);
+        private Player CreateNewPlayer(int joinedPlayersCount, NetPeer peer, SystemsContext context) {
+            var player = context.World.CreateEntity<Player>();
+            player.SetComponent(new GameSideComponent(joinedPlayersCount == 0 ? GameSide.Cross : GameSide.Nought));
+            player.SetComponent(new AssociatedPeerComponent(peer));
             return player;
         }
 

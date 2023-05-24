@@ -4,7 +4,7 @@ namespace ServerShared.Shared.Network
 {
     public struct InputMessage : IMessage
     {
-        public readonly MessageType Type => MessageType.InputMessage;
+        public MessageType Type => MessageType.InputMessage;
         public int Row { get; private set; }
         public int Column { get; private set; }
 

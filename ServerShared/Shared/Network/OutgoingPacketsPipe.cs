@@ -1,6 +1,9 @@
 ﻿using LiteNetLib;
 using LiteNetLib.Utils;
 using ServerShared.Shared.Network;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Server.Shared.Network
 {
@@ -16,14 +19,14 @@ namespace Server.Shared.Network
         }
 
         public void SendOneWay(NetPeer peer, IMessage message, DeliveryMethod deliveryMethod) {
-            var communicationInfo = new CommunicationInfo(_random.NextInt64(), CommunicationDirection.OneWay);
+            var communicationInfo = new CommunicationInfo(_random.Next(), CommunicationDirection.OneWay);
             var messageWrapper = new MessageWrapper(peer, communicationInfo, message, deliveryMethod);
             PrepareWriter(_writer, messageWrapper);
             peer.Send(_writer, deliveryMethod);
         }
 
         public void SendToAllOneWay(IEnumerable<NetPeer> peers, IMessage message, DeliveryMethod deliveryMethod) {
-            var communicationInfo = new CommunicationInfo(_random.NextInt64(), CommunicationDirection.OneWay);
+            var communicationInfo = new CommunicationInfo(_random.Next(), CommunicationDirection.OneWay);
             var messageWrapper = new MessageWrapper(null, communicationInfo, message, deliveryMethod);
             PrepareWriter(_writer, messageWrapper);
             foreach (var peer in peers) {
@@ -32,7 +35,7 @@ namespace Server.Shared.Network
         }
 
         public async Task<(bool success, MessageWrapper response)> SendAndWaitForResponse(NetPeer peer, IMessage message, MessageType expectedResponse, int timeoutSeconds) {
-            var communicationInfo = new CommunicationInfo(_random.NextInt64(), CommunicationDirection.AwaitsResponse);
+            var communicationInfo = new CommunicationInfo(_random.Next(), CommunicationDirection.AwaitsResponse);
             var messageWrapper = new MessageWrapper(peer, communicationInfo, message, DeliveryMethod.ReliableOrdered);
             PrepareWriter(_writer, messageWrapper);
             peer.Send(_writer, DeliveryMethod.ReliableOrdered);

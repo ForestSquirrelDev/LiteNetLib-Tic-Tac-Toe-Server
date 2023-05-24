@@ -2,6 +2,6 @@
 
 namespace ServerShared.Shared.Network {
     public interface IMessage : INetSerializable {
-        public MessageType Type { get; }
+        MessageType Type { get; }
     }
 }

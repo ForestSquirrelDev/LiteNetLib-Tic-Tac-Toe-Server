@@ -20,10 +20,11 @@ namespace Game.Systems
 
         public void Build()
         {
-            _world.CreateSystem<RoomCreationSystem>();
-            var roomJoinHandlerSystem = _world.CreateSystem<RoomJoinHandlerSystem>();
-
-            roomJoinHandlerSystem.InjectDependencies(_incomingPacketsPipe, _outgoingPacketsPipe);
+            _world.CreateSystem<GameStarterSystem>().InjectDependencies(_outgoingPacketsPipe);
+            _world.CreateSystem<RoomJoinHandlerSystem>().InjectDependencies(_incomingPacketsPipe, _outgoingPacketsPipe);
+            _world.CreateSystem<InputHandlerSystem>().InjectDependencies(_incomingPacketsPipe);
+            _world.CreateSystem<NextTurnHandlerSystem>().InjectDependencies(_outgoingPacketsPipe);
+            _world.CreateSystem<TurnFinishHandlerSystem>().InjectDependencies(_outgoingPacketsPipe);
         }
     }
 }

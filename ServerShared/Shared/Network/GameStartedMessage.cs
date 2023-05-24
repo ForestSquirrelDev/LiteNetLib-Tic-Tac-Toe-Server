@@ -2,7 +2,7 @@
 
 namespace ServerShared.Shared.Network {
     public struct GameStartedMessage : IMessage {
-        public readonly MessageType Type => MessageType.GameStartedMessage;
+        public MessageType Type => MessageType.GameStartedMessage;
         public int GridSizeX { get; private set; }
         public int GridSizeY { get; private set; }
         public byte FirstTurnSide { get; private set; }

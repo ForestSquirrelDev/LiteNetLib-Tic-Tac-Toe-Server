@@ -5,9 +5,9 @@ namespace ServerShared.Shared.Network
     public struct CommunicationInfo : INetSerializable
     {
         public CommunicationDirection Direction { get; private set; }
-        public long RandomPacketId { get; private set; }
+        public int RandomPacketId { get; private set; }
 
-        public CommunicationInfo(long id, CommunicationDirection direction)
+        public CommunicationInfo(int id, CommunicationDirection direction)
         {
             RandomPacketId = id;
             Direction = direction;
@@ -16,7 +16,7 @@ namespace ServerShared.Shared.Network
         public void Deserialize(NetDataReader reader)
         {
             Direction = (CommunicationDirection)reader.GetByte();
-            RandomPacketId = reader.GetLong();
+            RandomPacketId = reader.GetInt();
         }
 
         public void Serialize(NetDataWriter writer)
