@@ -2,7 +2,7 @@
 using Server.Game.Components;
 using ServerShared.Shared.Network;
 
-namespace Server.Game.Systems {
+namespace Server.Game.Systems.Events {
     public readonly struct PlayerInputEvent : ISystemEvent {
         public GameSide GameSide { get; }
         public int CellRow { get; }
