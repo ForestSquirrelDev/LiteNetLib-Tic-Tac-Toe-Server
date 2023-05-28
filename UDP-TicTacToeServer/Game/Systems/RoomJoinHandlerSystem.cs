@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using LiteNetLib;
-using PoorMansECS.Components;
 using PoorMansECS.Systems;
 using Server.Game.Components;
 using Server.Game.Entities;
@@ -42,9 +42,13 @@ namespace Server.Game.Systems {
                 Console.WriteLine("Error: 2 players already joined");
                 return;
             }
+            if (joinedPlayers.JoinedPlayers.ContainsKey(joinMessage.AssociatedPeer.Id)) {
+                Console.WriteLine("Join error: player already joined");
+                return;
+            }
 
             var player = CreateNewPlayer(joinedPlayers.JoinedPlayers.Count, joinMessage.AssociatedPeer, _context);
-            joinedPlayers.JoinedPlayers.Add(player);
+            joinedPlayers.JoinedPlayers.Add(joinMessage.AssociatedPeer.Id, player);
 
             Console.WriteLine($"Player {joinMessage.AssociatedPeer.Id} joined");
 
@@ -52,7 +56,7 @@ namespace Server.Game.Systems {
                 _context.EventBus.SendEvent(new RoomFilledEvent());
 
             _outgoingPacketsPipe.SendResponse(joinMessage.AssociatedPeer, joinMessage, 
-                new AssignGameSideMessage((byte)player.GetComponent<GameSideComponent>().GameSide));
+                new AcceptJoinMessage((byte)player.GetComponent<GameSideComponent>().GameSide));
         }
 
         private Player CreateNewPlayer(int joinedPlayersCount, NetPeer peer, SystemsContext context) {

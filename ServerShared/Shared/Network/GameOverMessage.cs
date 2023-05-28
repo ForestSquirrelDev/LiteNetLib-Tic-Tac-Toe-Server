@@ -4,18 +4,18 @@ using ServerShared.Shared.Network;
 namespace Server.Shared.Network {
     public struct GameOverMessage : IMessage {
         public MessageType Type => MessageType.GameOverMessage;
-        public byte GameSide { get; private set; }
+        public byte Winner { get; private set; }
 
-        public GameOverMessage(byte gameSide) {
-            GameSide = gameSide;
+        public GameOverMessage(byte winner) {
+            Winner = winner;
         }
         
         public void Serialize(NetDataWriter writer) {
-            writer.Put(GameSide);
+            writer.Put(Winner);
         }
 
         public void Deserialize(NetDataReader reader) {
-            GameSide = reader.GetByte();
+            Winner = reader.GetByte();
         }
     }
 }

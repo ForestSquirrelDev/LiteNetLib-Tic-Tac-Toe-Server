@@ -4,19 +4,20 @@ using System.Net.Sockets;
 using LiteNetLib;
 using LiteNetLib.Utils;
 using PoorMansECS.Systems;
+using Server.Shared.Network;
 using ServerShared.Shared.Network;
 
 namespace Server.Connection
 {
     public class ConnectionManager : INetEventListener, IUpdateable {
         private readonly NetManager _server;
-        private readonly NetDataWriter _writer;
-        private readonly IncomingPacketsPipe _packetsPipe;
+        private readonly IncomingPacketsPipe _incomingPacketsPipe;
+        private readonly OutgoingPacketsPipe _outgoingPacketsPipe;
 
-        public ConnectionManager(IncomingPacketsPipe packetsPipe) {
+        public ConnectionManager(IncomingPacketsPipe incomingPacketsPipe, OutgoingPacketsPipe outgoingPacketsPipe) {
             _server = new NetManager(this);
-            _writer = new NetDataWriter(true);
-            _packetsPipe = packetsPipe;
+            _incomingPacketsPipe = incomingPacketsPipe;
+            _outgoingPacketsPipe = outgoingPacketsPipe;
         }
 
         public void Start() {
@@ -24,10 +25,8 @@ namespace Server.Connection
         }
 
         public void OnPeerConnected(NetPeer peer) {
-            _writer.Reset();
-            _writer.Put("Hello client");
-            peer.Send(_writer, DeliveryMethod.ReliableOrdered);
             Console.WriteLine($"New connection: {peer.EndPoint.Address}");
+            _outgoingPacketsPipe.SendOneWay(peer, new ConnectionEstablishedMessage(), DeliveryMethod.ReliableOrdered);
         }
 
         public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo) {
@@ -35,10 +34,11 @@ namespace Server.Connection
         }
 
         public void OnNetworkError(IPEndPoint endPoint, SocketError socketError) {
+            Console.WriteLine($"OnNetworkError: {socketError.ToString()}");
         }
 
         public void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod) {
-            _packetsPipe.ProcessMessage(peer, reader, deliveryMethod);
+            _incomingPacketsPipe.ProcessMessage(peer, reader, deliveryMethod);
         }
 
         public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType) {
@@ -48,12 +48,6 @@ namespace Server.Connection
         }
 
         public void OnConnectionRequest(ConnectionRequest request) {
-            if (_server.ConnectedPeersCount >= 2) {
-                _writer.Reset();
-                _writer.Put("Two players are already connected");
-                request.Reject(_writer);
-                return;
-            }
             request.Accept();
         }
 

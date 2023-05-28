@@ -16,7 +16,7 @@ namespace Server.Game
             var systemsBuilder = new SystemsBuilder(World, incomingPacketsPipe, outgoingPacketsPipe);
             systemsBuilder.Build();
 
-            var entitiesBuilder = new InitialEntitiesBuilder(World);
+            var entitiesBuilder = new EntitiesBuilder(World);
             entitiesBuilder.Build();
         }
 

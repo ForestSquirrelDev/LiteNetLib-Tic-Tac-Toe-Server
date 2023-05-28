@@ -63,9 +63,9 @@ namespace Server.Shared.Network
                 if (passedMilliseconds >= timeoutMilliseconds) {
                     return (false, default);
                 }
-                await Task.Delay(10);
+                await Task.Delay(5);
                 result = temporaryAwaiter.GetResponseMessage();
-                passedMilliseconds += 10;
+                passedMilliseconds += 5;
             }
             return (true, result.message);
         }

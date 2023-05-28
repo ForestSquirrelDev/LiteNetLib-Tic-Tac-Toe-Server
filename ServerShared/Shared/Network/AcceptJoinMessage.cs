@@ -2,11 +2,11 @@
 using ServerShared.Shared.Network;
 
 namespace Server.Shared.Network {
-    public struct AssignGameSideMessage : IMessage {
-        public MessageType Type => MessageType.AssignGameSideMessage;
+    public struct AcceptJoinMessage : IMessage {
+        public MessageType Type => MessageType.AcceptJoinMessage;
         public byte GameSide { get; private set; }
 
-        public AssignGameSideMessage(byte gameSide) {
+        public AcceptJoinMessage(byte gameSide) {
             GameSide = gameSide;
         }
 

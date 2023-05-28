@@ -36,12 +36,12 @@ namespace Server.Game.Systems {
 
             var initialRandomTurn = RandomizeFirstTurn();
             room.SetComponent(new NextTurnComponent((GameSide)initialRandomTurn));
+            room.SetComponent(new GameStateComponent(GameStateComponent.GameState.Ongoing));
             BroadcastStartToPeers(_context.World.Entities.GetFirst<Grid>(), joinedPlayers, initialRandomTurn);
         }
 
         private void BroadcastStartToPeers(Grid grid, JoinedPlayersComponent joinedPlayers, byte initialRandomTurn) {
-            var associatedPeers = joinedPlayers.JoinedPlayers.Select(player => player.GetComponent<AssociatedPeerComponent>().Peer);
-            var communicationInfo = new CommunicationInfo(-1, CommunicationDirection.OneWay);
+            var associatedPeers = joinedPlayers.JoinedPlayers.Values.Select(player => player.GetComponent<AssociatedPeerComponent>().Peer);
             var gridParameters = grid.GetComponent<GridParametersComponent>();
             var message = new GameStartedMessage(gridParameters.XSize, gridParameters.YSize, initialRandomTurn);
             _outgoingPacketsPipe.SendToAllOneWay(associatedPeers, message, LiteNetLib.DeliveryMethod.ReliableOrdered);

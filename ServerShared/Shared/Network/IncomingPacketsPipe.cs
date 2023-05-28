@@ -2,7 +2,6 @@
 using Server.Shared.Network;
 using System;
 using System.Collections.Generic;
-using static ServerShared.Shared.Network.Packets;
 
 namespace ServerShared.Shared.Network {
     public class IncomingPacketsPipe
@@ -49,8 +48,16 @@ namespace ServerShared.Shared.Network {
                 message = new JoinRequestMessage();
             if (messageType == MessageType.GameStartedMessage)
                 message = new GameStartedMessage();
-            if (messageType == MessageType.AssignGameSideMessage)
-                message = new AssignGameSideMessage();
+            if (messageType == MessageType.AcceptJoinMessage)
+                message = new AcceptJoinMessage();
+            if (messageType == MessageType.ConnectionEstablishedMessage)
+                message = new ConnectionEstablishedMessage();
+            if (messageType == MessageType.TurnFinished)
+                message = new TurnFinishedMessage();
+            if (messageType == MessageType.InputMessage)
+                message = new InputMessage();
+            if (messageType == MessageType.InputResponseMessage)
+                message = new InputResponseMessage();
             message.Deserialize(reader);
 
             return new MessageWrapper(peer, communicationInfo, message, deliveryMethod);

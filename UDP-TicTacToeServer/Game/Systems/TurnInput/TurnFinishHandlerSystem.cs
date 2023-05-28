@@ -8,6 +8,7 @@ using Server.Game.Components;
 using Server.Game.Entities;
 using Server.Game.Systems.Events;
 using Server.Shared.Network;
+using ServerShared.Shared.Network;
 
 namespace Server.Game.Systems.TurnInput {
     public class TurnFinishHandlerSystem : SystemBase, ISystemsEventListener {
@@ -41,6 +42,7 @@ namespace Server.Game.Systems.TurnInput {
                 player => player.GetComponent<AssociatedPeerComponent>().Peer);
             var message = new GameOverMessage((byte)gameSide);
             _outgoingPacketsPipe.SendToAllOneWay(playerAssociatedPeers, message, DeliveryMethod.ReliableOrdered);
+            _context.World.Entities.GetFirst<Room>().SetComponent(new GameStateComponent(GameStateComponent.GameState.Ended));
             _context.EventBus.SendEvent(new GameOverEvent(gameSide));
         }
 

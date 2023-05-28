@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using PoorMansECS.Components;
 
 namespace Game.Components {
@@ -11,15 +10,26 @@ namespace Game.Components {
             _cellsRowColumnWise = new GridCell[gridSizeX, gridSizeY];
             for (int x = 0; x < gridSizeX; x++)
             {
-                for (int y = 0; y < gridSizeY; y++)
+                for (int y = gridSizeY - 1; y >= 0; y--)
                 {
                     _cellsRowColumnWise[x, y] = new GridCell(x, y);
                 }
             }
         }
 
-        public GridCell GetCell(int row, int column) {
-            return _cellsRowColumnWise[row, column];
+        public bool TryGetCell(int row, int column, out GridCell cell) {
+            if (row < 0 || row >= _cellsRowColumnWise.GetLength(0)) {
+                Console.WriteLine($"Row was out of bounds: {row}");
+                cell = default;
+                return false;
+            }
+            if (column < 0 || column >= _cellsRowColumnWise.GetLength(1)) {
+                Console.WriteLine($"Column was out of bounds: {column}");
+                cell = default;
+                return false;
+            }
+            cell = _cellsRowColumnWise[row, column];
+            return true;
         }
 
         public GridCell[,] GetCellsCopy() {

@@ -5,10 +5,10 @@ using Server.Game.Components;
 using Server.Game.Entities;
 
 namespace Server.Game {
-    public class InitialEntitiesBuilder {
+    public class EntitiesBuilder {
         private readonly World _world;
 
-        public InitialEntitiesBuilder(World world) {
+        public EntitiesBuilder(World world) {
             _world = world;
         }
 
@@ -21,6 +21,7 @@ namespace Server.Game {
             var room = world.CreateEntity<Room>();
             room.SetComponent(new JoinedPlayersComponent());
             room.SetComponent(new NextTurnComponent());
+            room.SetComponent(new GameStateComponent());
         }
 
         private void BuildGrid(World world) {

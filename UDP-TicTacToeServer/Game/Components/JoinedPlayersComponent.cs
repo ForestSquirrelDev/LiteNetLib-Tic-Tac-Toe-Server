@@ -4,6 +4,6 @@ using Server.Game.Entities;
 
 namespace Server.Game.Components {
     public class JoinedPlayersComponent : IComponentData {
-        public List<Player> JoinedPlayers { get; } = new();
+        public Dictionary<int, Player> JoinedPlayers { get; } = new();
     }
 }

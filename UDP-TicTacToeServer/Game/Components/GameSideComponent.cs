@@ -1,4 +1,5 @@
 using PoorMansECS.Components;
+using ServerShared.Shared.Network;
 
 namespace Server.Game.Components {
     public readonly struct GameSideComponent : IComponentData {

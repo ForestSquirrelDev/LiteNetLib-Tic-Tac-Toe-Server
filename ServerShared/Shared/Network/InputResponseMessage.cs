@@ -22,7 +22,7 @@ namespace ServerShared.Shared.Network {
         }
 
         public enum Reason {
-            None = 0, WrongTurn = 1
+            None = 0, WrongTurn = 1, OutOfBounds = 2, GameNotStarted = 3, GameFinished = 4
         }
     }
 }
