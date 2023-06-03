@@ -15,5 +15,10 @@ The repository is uploaded as is - it has not undergone any major refactorings. 
 - Authoritative server
 - ECS-based game flow, made with my small custom [ECS library](https://github.com/ForestSquirrelDev/PoorMansECS)
 - Request-response system on top of LiteNetLib
+- Memes for lose, win and draw conditions, lol. Apologies for being a degenerate meme lord
 
-###### This readme is mirror of [Client-side](https://github.com/ForestSquirrelDev/LiteNetLib-Tic-Tac-Toe-Client) repository
+In this video i enter and finish the game with two separate Unity editor instances, connected to the local server. Earrape warning 👂
+
+https://github.com/ForestSquirrelDev/LiteNetLib-Tic-Tac-Toe-Client/assets/82777171/0ba3c923-2805-4cf3-b9c8-a0df9a142999
+
+###### This readme is mirror of [Client-side](https://github.com/ForestSquirrelDev/LiteNetLib-Tic-Tac-Toe-Client) readme
