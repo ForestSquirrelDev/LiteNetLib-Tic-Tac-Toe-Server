@@ -1,5 +1,4 @@
-﻿using Server.Game.Components;
-using ServerShared.Shared.Network;
+﻿using ServerShared.Shared.Network;
 
 namespace Game.Components
 {

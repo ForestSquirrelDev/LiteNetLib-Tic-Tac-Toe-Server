@@ -9,23 +9,23 @@ namespace Game.Systems
     public class SystemsBuilder
     {
         private readonly World _world;
-        private readonly IncomingPacketsPipe _incomingPacketsPipe;
-        private readonly OutgoingPacketsPipe _outgoingPacketsPipe;
+        private readonly IncomingMessagesPipe _incomingMessagesPipe;
+        private readonly OutgoingMessagesPipe _outgoingMessagesPipe;
 
-        public SystemsBuilder(World world, IncomingPacketsPipe incomingPacketsPipe, OutgoingPacketsPipe outgoingPacketsPipe)
+        public SystemsBuilder(World world, IncomingMessagesPipe incomingMessagesPipe, OutgoingMessagesPipe outgoingMessagesPipe)
         {
             _world = world;
-            _incomingPacketsPipe = incomingPacketsPipe;
-            _outgoingPacketsPipe = outgoingPacketsPipe;
+            _incomingMessagesPipe = incomingMessagesPipe;
+            _outgoingMessagesPipe = outgoingMessagesPipe;
         }
 
         public void Build()
         {
-            _world.CreateSystem<GameStarterSystem>().InjectDependencies(_outgoingPacketsPipe);
-            _world.CreateSystem<RoomJoinHandlerSystem>().InjectDependencies(_incomingPacketsPipe, _outgoingPacketsPipe);
-            _world.CreateSystem<InputHandlerSystem>().InjectDependencies(_incomingPacketsPipe);
-            _world.CreateSystem<NextTurnHandlerSystem>().InjectDependencies(_outgoingPacketsPipe);
-            _world.CreateSystem<TurnFinishHandlerSystem>().InjectDependencies(_outgoingPacketsPipe);
+            _world.CreateSystem<GameStarterSystem>().InjectDependencies(_outgoingMessagesPipe);
+            _world.CreateSystem<RoomJoinHandlerSystem>().InjectDependencies(_incomingMessagesPipe, _outgoingMessagesPipe);
+            _world.CreateSystem<InputHandlerSystem>().InjectDependencies(_incomingMessagesPipe);
+            _world.CreateSystem<NextTurnHandlerSystem>().InjectDependencies(_outgoingMessagesPipe);
+            _world.CreateSystem<GameOverHandlerSystem>().InjectDependencies(_outgoingMessagesPipe);
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 using LiteNetLib;
 using PoorMansECS.Systems;
 using Server.Game.Components;
@@ -10,24 +8,24 @@ using ServerShared.Shared.Network;
 
 namespace Server.Game.Systems {
     public class RoomJoinHandlerSystem : SystemBase, INetMessageListener {
-        private IncomingPacketsPipe _incomingPacketsPipe;
-        private OutgoingPacketsPipe _outgoingPacketsPipe;
+        private IncomingMessagesPipe _incomingMessagesPipe;
+        private OutgoingMessagesPipe _outgoingMessagesPipe;
 
         public RoomJoinHandlerSystem(SystemsContext context) : base(context) { }
 
-        public void InjectDependencies(IncomingPacketsPipe incomingPacketsPipe, OutgoingPacketsPipe outgoingPacketsPipe) {
-            _incomingPacketsPipe = incomingPacketsPipe;
-            _outgoingPacketsPipe = outgoingPacketsPipe;
+        public void InjectDependencies(IncomingMessagesPipe incomingMessagesPipe, OutgoingMessagesPipe outgoingMessagesPipe) {
+            _incomingMessagesPipe = incomingMessagesPipe;
+            _outgoingMessagesPipe = outgoingMessagesPipe;
         }
         
         protected override void OnStart() {
-            _incomingPacketsPipe.Register(MessageType.JoinRequestMessage, this);
+            _incomingMessagesPipe.Register(MessageType.JoinRequestMessage, this);
         }
 
         protected override void OnUpdate(float delta) { }
 
         protected override void OnStop() {
-            _incomingPacketsPipe.Unregister(MessageType.JoinRequestMessage, this);
+            _incomingMessagesPipe.Unregister(MessageType.JoinRequestMessage, this);
         }
 
         public void ReceiveMessage(MessageWrapper message) {
@@ -50,12 +48,12 @@ namespace Server.Game.Systems {
             var player = CreateNewPlayer(joinedPlayers.JoinedPlayers.Count, joinMessage.AssociatedPeer, _context);
             joinedPlayers.JoinedPlayers.Add(joinMessage.AssociatedPeer.Id, player);
 
-            Console.WriteLine($"Player {joinMessage.AssociatedPeer.Id} joined");
+            Console.WriteLine($"Player {joinMessage.AssociatedPeer.Id} joined. Game side: {player.GetComponent<GameSideComponent>().GameSide}");
 
             if (RoomFilled(joinedPlayers.JoinedPlayers.Count))
                 _context.EventBus.SendEvent(new RoomFilledEvent());
 
-            _outgoingPacketsPipe.SendResponse(joinMessage.AssociatedPeer, joinMessage, 
+            _outgoingMessagesPipe.SendResponse(joinMessage.AssociatedPeer, joinMessage, 
                 new AcceptJoinMessage((byte)player.GetComponent<GameSideComponent>().GameSide));
         }
 

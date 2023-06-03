@@ -9,12 +9,12 @@ using ServerShared.Shared.Network;
 
 namespace Server.Game.Systems {
     public class GameStarterSystem : SystemBase, ISystemsEventListener {
-        private OutgoingPacketsPipe _outgoingPacketsPipe;
+        private OutgoingMessagesPipe _outgoingMessagesPipe;
 
         public GameStarterSystem(SystemsContext context) : base(context) { }
 
-        public void InjectDependencies(OutgoingPacketsPipe outgoingPacketsPipe) {
-            _outgoingPacketsPipe = outgoingPacketsPipe;
+        public void InjectDependencies(OutgoingMessagesPipe outgoingMessagesPipe) {
+            _outgoingMessagesPipe = outgoingMessagesPipe;
         }
 
         protected override void OnStart() {
@@ -44,7 +44,7 @@ namespace Server.Game.Systems {
             var associatedPeers = joinedPlayers.JoinedPlayers.Values.Select(player => player.GetComponent<AssociatedPeerComponent>().Peer);
             var gridParameters = grid.GetComponent<GridParametersComponent>();
             var message = new GameStartedMessage(gridParameters.XSize, gridParameters.YSize, initialRandomTurn);
-            _outgoingPacketsPipe.SendToAllOneWay(associatedPeers, message, LiteNetLib.DeliveryMethod.ReliableOrdered);
+            _outgoingMessagesPipe.SendToAllOneWay(associatedPeers, message, LiteNetLib.DeliveryMethod.ReliableOrdered);
         }
 
         private byte RandomizeFirstTurn() {

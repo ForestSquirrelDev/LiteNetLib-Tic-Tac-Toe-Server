@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 namespace ServerShared.Shared.Network {
-    public class IncomingPacketsPipe
+    public class IncomingMessagesPipe
     {
         private readonly Dictionary<MessageType, HashSet<INetMessageListener>> _listeners = new Dictionary<MessageType, HashSet<INetMessageListener>>();
 
@@ -43,21 +43,17 @@ namespace ServerShared.Shared.Network {
             var communicationInfo = new CommunicationInfo();
             communicationInfo.Deserialize(reader);
 
-            IMessage message = null;
-            if (messageType == MessageType.JoinRequestMessage)
-                message = new JoinRequestMessage();
-            if (messageType == MessageType.GameStartedMessage)
-                message = new GameStartedMessage();
-            if (messageType == MessageType.AcceptJoinMessage)
-                message = new AcceptJoinMessage();
-            if (messageType == MessageType.ConnectionEstablishedMessage)
-                message = new ConnectionEstablishedMessage();
-            if (messageType == MessageType.TurnFinished)
-                message = new TurnFinishedMessage();
-            if (messageType == MessageType.InputMessage)
-                message = new InputMessage();
-            if (messageType == MessageType.InputResponseMessage)
-                message = new InputResponseMessage();
+            IMessage message = messageType switch {
+                MessageType.JoinRequestMessage => new JoinRequestMessage(),
+                MessageType.GameStartedMessage => new GameStartedMessage(),
+                MessageType.AcceptJoinMessage => new AcceptJoinMessage(),
+                MessageType.ConnectionEstablishedMessage => new ConnectionEstablishedMessage(),
+                MessageType.TurnFinished => new TurnFinishedMessage(),
+                MessageType.InputMessage => new InputMessage(),
+                MessageType.InputResponseMessage => new InputResponseMessage(),
+                MessageType.GameOverMessage => new GameOverMessage(),
+                _ => null
+            };
             message.Deserialize(reader);
 
             return new MessageWrapper(peer, communicationInfo, message, deliveryMethod);

@@ -4,14 +4,14 @@ namespace Server.Shared.Network
 {
     public class TemporaryResponseAwaiter : INetMessageListener {
         private readonly long _responseId;
-        private readonly IncomingPacketsPipe _incomingPacketsPipe;
+        private readonly IncomingMessagesPipe _incomingMessagesPipe;
         private readonly MessageType _responseMessageType;
 
         private (bool, MessageWrapper) _responseMessage;
 
-        public TemporaryResponseAwaiter(long responseId, MessageType responseMessageType, IncomingPacketsPipe incomingPacketsPipe) {
+        public TemporaryResponseAwaiter(long responseId, MessageType responseMessageType, IncomingMessagesPipe incomingMessagesPipe) {
             _responseId = responseId;
-            _incomingPacketsPipe = incomingPacketsPipe;
+            _incomingMessagesPipe = incomingMessagesPipe;
             _responseMessageType = responseMessageType;
         }
 
@@ -22,7 +22,7 @@ namespace Server.Shared.Network
         }
 
         public void StartWaiting() {
-            _incomingPacketsPipe.Register(_responseMessageType, this);
+            _incomingMessagesPipe.Register(_responseMessageType, this);
         }
 
         public (bool receivedResponse, MessageWrapper message) GetResponseMessage() {
@@ -30,7 +30,7 @@ namespace Server.Shared.Network
         }
 
         public void Dispose() {
-            _incomingPacketsPipe.Unregister(_responseMessageType, this);
+            _incomingMessagesPipe.Unregister(_responseMessageType, this);
         }
     }
 }

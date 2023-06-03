@@ -8,8 +8,8 @@ using PoorMansECS.Systems;
 using ServerShared.Shared.Network;
 using Server.Shared.Network;
 
-var incomingPacketsPipe = new IncomingPacketsPipe();
-var outgoingPacketsPipe = new OutgoingPacketsPipe(incomingPacketsPipe);
+var incomingPacketsPipe = new IncomingMessagesPipe();
+var outgoingPacketsPipe = new OutgoingMessagesPipe(incomingPacketsPipe);
 var connectionManager = new ConnectionManager(incomingPacketsPipe, outgoingPacketsPipe);
 var inputCommandsPipe = new ConsoleInputCommandsPipe();
 var gameModel = new GameModel(incomingPacketsPipe, outgoingPacketsPipe, inputCommandsPipe);

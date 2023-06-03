@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Game.Components;
 using Game.Entities;
 using LiteNetLib;
+using PoorMansECS.Entities;
 using PoorMansECS.Systems;
 using Server.Game.Components;
 using Server.Game.Entities;
@@ -11,12 +13,12 @@ using ServerShared.Shared.Network;
 
 namespace Server.Game.Systems.TurnInput {
     public class NextTurnHandlerSystem : SystemBase, ISystemsEventListener {
-        private OutgoingPacketsPipe _outgoingPacketsPipe;
+        private OutgoingMessagesPipe _outgoingMessagesPipe;
 
         public NextTurnHandlerSystem(SystemsContext context) : base(context) { }
 
-        public void InjectDependencies(OutgoingPacketsPipe outgoingPacketsPipe) {
-            _outgoingPacketsPipe = outgoingPacketsPipe;
+        public void InjectDependencies(OutgoingMessagesPipe outgoingMessagesPipe) {
+            _outgoingMessagesPipe = outgoingMessagesPipe;
         }
         
         protected override void OnStart() {
@@ -34,9 +36,11 @@ namespace Server.Game.Systems.TurnInput {
             var associatedPlayer = _context.World.Entities.GetFirst<Player>(
                 p => p.GetComponent<AssociatedPeerComponent>().Peer.Id == playerInput.RequestMessage.AssociatedPeer.Id);
             var associatedPeer = associatedPlayer.GetComponent<AssociatedPeerComponent>().Peer;
-            if (playerInput.GameSide != nextTurn.NextTurnSide) {
+            var playerSide = associatedPlayer.GetComponent<GameSideComponent>().GameSide;
+            Console.WriteLine($"Player input side: {playerInput.GameSide}. Next turn side: {nextTurn.NextTurnSide}");
+            if (playerSide != nextTurn.NextTurnSide) {
                 var responseMessage = new InputResponseMessage(false, InputResponseMessage.Reason.WrongTurn);
-                _outgoingPacketsPipe.SendResponse(associatedPeer, requestMessage, responseMessage);
+                _outgoingMessagesPipe.SendResponse(associatedPeer, requestMessage, responseMessage);
                 return;
             }
 
@@ -45,29 +49,36 @@ namespace Server.Game.Systems.TurnInput {
                 var responseMessage = new InputResponseMessage(false, gameState == GameStateComponent.GameState.Idle 
                     ? InputResponseMessage.Reason.GameNotStarted 
                     : InputResponseMessage.Reason.GameFinished);
-                _outgoingPacketsPipe.SendResponse(associatedPeer, requestMessage, responseMessage);
+                _outgoingMessagesPipe.SendResponse(associatedPeer, requestMessage, responseMessage);
                 return;
             }
 
             var grid = _context.World.Entities.GetFirst<Grid>();
+            var cellsComponent = grid.GetComponent<GridCellsComponent>();
             var hasCell = grid.GetComponent<GridCellsComponent>().TryGetCell(playerInput.CellRow, playerInput.CellColumn, out var cell);
             if (!hasCell) {
                 var responseMessage = new InputResponseMessage(false, InputResponseMessage.Reason.OutOfBounds);
-                _outgoingPacketsPipe.SendResponse(associatedPeer, requestMessage, responseMessage);
+                _outgoingMessagesPipe.SendResponse(associatedPeer, requestMessage, responseMessage);
                 return;
             }
+            cell.SetOccupationInfo(playerInput.GameSide);
             
-            FinalizeTurn(cell, playerInput, room, requestMessage, associatedPlayer);
+            UpdateGameState(cellsComponent, cell, room, playerInput.GameSide);
+            BroadcastTurnFinish(playerInput, requestMessage, _context, _outgoingMessagesPipe);
+        }
+
+        private void UpdateGameState(GridCellsComponent cellsComponent, GridCell targetCell, IEntity room, GameSide gameSide) {
+            room.SetComponent(new NextTurnComponent(gameSide == GameSide.Cross ? GameSide.Nought : GameSide.Cross));
+            cellsComponent.SetCell(targetCell, targetCell.Row, targetCell.Column);
         }
         
-        private void FinalizeTurn(GridCell cell, PlayerInputEvent playerInput, Room room, MessageWrapper requestMessage, Player associatedPlayer) {
-            cell.SetOccupationInfo(playerInput.GameSide);
-            room.SetComponent(new NextTurnComponent(playerInput.GameSide == GameSide.Cross ? GameSide.Nought : GameSide.Cross));
-            _outgoingPacketsPipe.SendResponse(requestMessage.AssociatedPeer, requestMessage, new InputResponseMessage(true, InputResponseMessage.Reason.None));
+        private void BroadcastTurnFinish(PlayerInputEvent playerInput, MessageWrapper requestMessage, SystemsContext context, OutgoingMessagesPipe outgoingMessagesPipe) {
+            var inputResponse = new InputResponseMessage(true, InputResponseMessage.Reason.None);
+            outgoingMessagesPipe.SendResponse(requestMessage.AssociatedPeer, requestMessage, inputResponse);
             var inputFinishedMessage = new TurnFinishedMessage(playerInput.CellRow, playerInput.CellColumn, (byte)playerInput.GameSide);
-            _outgoingPacketsPipe.SendToAllOneWay(_context.World.Entities.GetAll<Player>().Select(p => p.GetComponent<AssociatedPeerComponent>().Peer),
-                inputFinishedMessage, DeliveryMethod.ReliableOrdered);
-            _context.EventBus.SendEvent(new TurnFinishedEvent(cell, associatedPlayer));
+            var playerPeers = context.World.Entities.GetAll<Player>().Select(p => p.GetComponent<AssociatedPeerComponent>().Peer);
+            outgoingMessagesPipe.SendToAllOneWay(playerPeers, inputFinishedMessage, DeliveryMethod.ReliableOrdered);
+            context.EventBus.SendEvent(new TurnFinishedEvent(playerInput.GameSide));
         }
 
         protected override void OnStop() { }

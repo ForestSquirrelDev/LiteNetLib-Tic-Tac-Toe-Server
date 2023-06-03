@@ -6,16 +6,16 @@ using ServerShared.Shared.Network;
 
 namespace Server.Game.Systems.TurnInput {
     public class InputHandlerSystem : SystemBase, INetMessageListener {
-        private IncomingPacketsPipe _incomingPacketsPipe;
+        private IncomingMessagesPipe _incomingMessagesPipe;
 
         public InputHandlerSystem(SystemsContext context) : base(context) { }
 
-        public void InjectDependencies(IncomingPacketsPipe incomingPacketsPipe) {
-            _incomingPacketsPipe = incomingPacketsPipe;
+        public void InjectDependencies(IncomingMessagesPipe incomingMessagesPipe) {
+            _incomingMessagesPipe = incomingMessagesPipe;
         }
 
         protected override void OnStart() {
-            _incomingPacketsPipe.Register(MessageType.InputMessage, this);
+            _incomingMessagesPipe.Register(MessageType.InputMessage, this);
         }
 
         public void ReceiveMessage(MessageWrapper requestMessage) {

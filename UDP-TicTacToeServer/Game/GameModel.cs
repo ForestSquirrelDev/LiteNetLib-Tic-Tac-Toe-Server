@@ -10,10 +10,10 @@ namespace Server.Game
     public class GameModel : IUpdateable {
         public World World { get; }
 
-        public GameModel(IncomingPacketsPipe incomingPacketsPipe, OutgoingPacketsPipe outgoingPacketsPipe, ConsoleInputCommandsPipe inputCommandsPipe) {
+        public GameModel(IncomingMessagesPipe incomingMessagesPipe, OutgoingMessagesPipe outgoingMessagesPipe, ConsoleInputCommandsPipe inputCommandsPipe) {
             World = new World();
 
-            var systemsBuilder = new SystemsBuilder(World, incomingPacketsPipe, outgoingPacketsPipe);
+            var systemsBuilder = new SystemsBuilder(World, incomingMessagesPipe, outgoingMessagesPipe);
             systemsBuilder.Build();
 
             var entitiesBuilder = new EntitiesBuilder(World);

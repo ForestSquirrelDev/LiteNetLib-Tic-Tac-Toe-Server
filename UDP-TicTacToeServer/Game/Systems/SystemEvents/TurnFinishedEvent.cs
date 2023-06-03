@@ -1,15 +1,12 @@
-﻿using Game.Components;
-using PoorMansECS.Systems;
-using Server.Game.Entities;
+﻿using PoorMansECS.Systems;
+using ServerShared.Shared.Network;
 
 namespace Server.Game.Systems.Events {
     public readonly struct TurnFinishedEvent : ISystemEvent {
-        public GridCell Cell { get; }
-        public Player AssociatedPlayer { get; }
+        public GameSide FinishedSide { get; }
 
-        public TurnFinishedEvent(GridCell cell, Player associatedPlayer) {
-            Cell = cell;
-            AssociatedPlayer = associatedPlayer;
+        public TurnFinishedEvent(GameSide gameSide) {
+            FinishedSide = gameSide;
         }
     }
 }

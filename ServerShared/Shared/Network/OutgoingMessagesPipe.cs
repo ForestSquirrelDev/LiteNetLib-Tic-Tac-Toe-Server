@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Server.Shared.Network
 {
-    public class OutgoingPacketsPipe {
+    public class OutgoingMessagesPipe {
         private readonly NetDataWriter _writer;
-        private readonly IncomingPacketsPipe _incomingPacketsPipe;
+        private readonly IncomingMessagesPipe _incomingMessagesPipe;
         private readonly Random _random;
 
-        public OutgoingPacketsPipe(IncomingPacketsPipe incomingPacketsPipe) {
+        public OutgoingMessagesPipe(IncomingMessagesPipe incomingMessagesPipe) {
             _writer = new NetDataWriter();
-            _incomingPacketsPipe = incomingPacketsPipe;
+            _incomingMessagesPipe = incomingMessagesPipe;
             _random = new Random();
         }
 
@@ -40,8 +40,7 @@ namespace Server.Shared.Network
             PrepareWriter(_writer, messageWrapper);
             peer.Send(_writer, DeliveryMethod.ReliableOrdered);
 
-            var temporaryAwaiter = new TemporaryResponseAwaiter(messageWrapper.CommunicationInfo.RandomPacketId, expectedResponse, _incomingPacketsPipe);
-            temporaryAwaiter.StartWaiting();
+            var temporaryAwaiter = new TemporaryResponseAwaiter(messageWrapper.CommunicationInfo.RandomPacketId, expectedResponse, _incomingMessagesPipe);
             var result = await WaitForResult(timeoutSeconds, temporaryAwaiter);
             temporaryAwaiter.Dispose();
 
@@ -56,6 +55,7 @@ namespace Server.Shared.Network
         }
 
         private async Task<(bool receivedResponse, MessageWrapper messageWrapper)> WaitForResult(int timeoutSeconds, TemporaryResponseAwaiter temporaryAwaiter) {
+            temporaryAwaiter.StartWaiting();
             int timeoutMilliseconds = timeoutSeconds * 1000;
             int passedMilliseconds = 0;
             var result = temporaryAwaiter.GetResponseMessage();

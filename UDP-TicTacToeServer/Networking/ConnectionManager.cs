@@ -11,13 +11,13 @@ namespace Server.Connection
 {
     public class ConnectionManager : INetEventListener, IUpdateable {
         private readonly NetManager _server;
-        private readonly IncomingPacketsPipe _incomingPacketsPipe;
-        private readonly OutgoingPacketsPipe _outgoingPacketsPipe;
+        private readonly IncomingMessagesPipe _incomingMessagesPipe;
+        private readonly OutgoingMessagesPipe _outgoingMessagesPipe;
 
-        public ConnectionManager(IncomingPacketsPipe incomingPacketsPipe, OutgoingPacketsPipe outgoingPacketsPipe) {
+        public ConnectionManager(IncomingMessagesPipe incomingMessagesPipe, OutgoingMessagesPipe outgoingMessagesPipe) {
             _server = new NetManager(this);
-            _incomingPacketsPipe = incomingPacketsPipe;
-            _outgoingPacketsPipe = outgoingPacketsPipe;
+            _incomingMessagesPipe = incomingMessagesPipe;
+            _outgoingMessagesPipe = outgoingMessagesPipe;
         }
 
         public void Start() {
@@ -26,7 +26,7 @@ namespace Server.Connection
 
         public void OnPeerConnected(NetPeer peer) {
             Console.WriteLine($"New connection: {peer.EndPoint.Address}");
-            _outgoingPacketsPipe.SendOneWay(peer, new ConnectionEstablishedMessage(), DeliveryMethod.ReliableOrdered);
+            _outgoingMessagesPipe.SendOneWay(peer, new ConnectionEstablishedMessage(), DeliveryMethod.ReliableOrdered);
         }
 
         public void OnPeerDisconnected(NetPeer peer, DisconnectInfo disconnectInfo) {
@@ -38,7 +38,7 @@ namespace Server.Connection
         }
 
         public void OnNetworkReceive(NetPeer peer, NetPacketReader reader, byte channelNumber, DeliveryMethod deliveryMethod) {
-            _incomingPacketsPipe.ProcessMessage(peer, reader, deliveryMethod);
+            _incomingMessagesPipe.ProcessMessage(peer, reader, deliveryMethod);
         }
 
         public void OnNetworkReceiveUnconnected(IPEndPoint remoteEndPoint, NetPacketReader reader, UnconnectedMessageType messageType) {

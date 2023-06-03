@@ -35,5 +35,13 @@ namespace Game.Components {
         public GridCell[,] GetCellsCopy() {
             return (GridCell[,])_cellsRowColumnWise.Clone();
         }
+
+        public void SetCell(GridCell cell, int x, int y) {
+            if (x < 0 || x >= _cellsRowColumnWise.Length)
+                return;
+            if (y < 0 || y >= _cellsRowColumnWise.Length)
+                return;
+            _cellsRowColumnWise[x, y] = cell;
+        }
     }
 }
