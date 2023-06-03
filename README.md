@@ -12,7 +12,7 @@ The repository is uploaded as is - it has not undergone any major refactorings. 
 #### Features
 
 - Classic Tic-Tac-Toe gameplay
-- Authoritative server
+- Authoritative server. The game runs and changes it's state wholely on the server, with clients only drawing it
 - ECS-based game flow, made with my small custom [ECS library](https://github.com/ForestSquirrelDev/PoorMansECS)
 - Request-response system on top of LiteNetLib
 - Memes for lose, win and draw conditions, lol. Apologies for being a degenerate meme lord
