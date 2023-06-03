@@ -1,4 +1,19 @@
 # UDP Tic-Tac-Toe: Server
 
-This is a server-side of Tic-Tac-Toe implementation with UDP multiplayer. Readme is yet to be created.
-Client-side repository lies here: https://github.com/ForestSquirrelDev/UDP-Tic-Tac-Toe-Client
+### What is this?
+
+![image](https://github.com/ForestSquirrelDev/LiteNetLib-Tic-Tac-Toe-Server/assets/82777171/2a3950fb-ea74-4395-8389-3a184920fdb0)
+
+This is server implementation for a Tic-Tac-Toe game. It's based on .NET framework and [LiteNetLib](https://github.com/RevenantX/LiteNetLib) UDP library.
+While developing the game, [LiteNetLib game example](https://github.com/RevenantX/NetGameExample) was used as a source of examples for LiteNetLib usage.
+
+The repository is uploaded as is - it has not undergone any major refactorings. Whole purpose of the project was to familiarize myself a bit more with this part of game developer roadmap: ![image](https://github.com/ForestSquirrelDev/LiteNetLib-Tic-Tac-Toe-Server/assets/82777171/a2a6cdd5-e359-4bf9-a51a-c8e8c9d79a0e)
+
+#### Features
+
+- Classic Tic-Tac-Toe gameplay
+- Authoritative server
+- ECS-based game flow, made with my small custom [ECS library](https://github.com/ForestSquirrelDev/PoorMansECS)
+- Request-response system on top of LiteNetLib
+
+###### This readme is mirror of [Client-side](https://github.com/ForestSquirrelDev/LiteNetLib-Tic-Tac-Toe-Client) repository
