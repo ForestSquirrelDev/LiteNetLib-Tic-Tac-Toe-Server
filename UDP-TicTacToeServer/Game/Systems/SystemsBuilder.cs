@@ -23,7 +23,7 @@ namespace Game.Systems
         {
             _world.CreateSystem<GameStarterSystem>().InjectDependencies(_outgoingMessagesPipe);
             _world.CreateSystem<RoomJoinHandlerSystem>().InjectDependencies(_incomingMessagesPipe, _outgoingMessagesPipe);
-            _world.CreateSystem<InputHandlerSystem>().InjectDependencies(_incomingMessagesPipe);
+            _world.CreateSystem<InputReceiverSystem>().InjectDependencies(_incomingMessagesPipe);
             _world.CreateSystem<NextTurnHandlerSystem>().InjectDependencies(_outgoingMessagesPipe);
             _world.CreateSystem<GameOverHandlerSystem>().InjectDependencies(_outgoingMessagesPipe);
         }

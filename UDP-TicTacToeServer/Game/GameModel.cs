@@ -1,12 +1,12 @@
 ﻿using PoorMansECS.Systems;
-using Server.Input;
 using PoorMansECS;
 using Game.Systems;
 using ServerShared.Shared.Network;
 using Server.Shared.Network;
+using Server.ConsoleInput;
+using Server.Game.Entities;
 
-namespace Server.Game
-{
+namespace Server.Game {
     public class GameModel : IUpdateable {
         public World World { get; }
 

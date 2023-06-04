@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using PoorMansECS.Systems;
 
-namespace Server.Input {
+namespace Server.ConsoleInput {
     public class ConsoleInputCommandsPipe : IUpdateable {
-        private readonly HashSet<IInputCommandsReceiver> _receivers = new();
+        private readonly HashSet<IConsoleInputCommandsReceiver> _receivers = new();
 
-        public ConsoleInputCommandsPipe(IEnumerable<IInputCommandsReceiver> receivers) {
+        public ConsoleInputCommandsPipe(IEnumerable<IConsoleInputCommandsReceiver> receivers) {
             foreach (var receiver in receivers)
                 _receivers.Add(receiver);
         }
@@ -17,24 +17,28 @@ namespace Server.Input {
             if (Console.KeyAvailable) {
                 var key = Console.ReadKey(true);
                 foreach (var receiver in _receivers) {
-                    receiver.ReceiveInputCommand(new InputCommand(key));
+                    receiver.ReceiveInputCommand(new ConsoleInputCommand(key));
                 }
             }
         }
 
-        public void AddReceiver(IInputCommandsReceiver receiver) {
+        public void AddReceiver(IConsoleInputCommandsReceiver receiver) {
             _receivers.Add(receiver);
         }
     }
+}
 
-    public interface IInputCommandsReceiver {
-        public void ReceiveInputCommand(InputCommand command);
+namespace Server.ConsoleInput {
+    public interface IConsoleInputCommandsReceiver {
+        public void ReceiveInputCommand(ConsoleInputCommand command);
     }
+}
 
-    public readonly struct InputCommand {
+namespace Server.ConsoleInput {
+    public readonly struct ConsoleInputCommand {
         public ConsoleKeyInfo KeyInfo { get; }
-        
-        public InputCommand(ConsoleKeyInfo keyInfo) {
+
+        public ConsoleInputCommand(ConsoleKeyInfo keyInfo) {
             KeyInfo = keyInfo;
         }
     }

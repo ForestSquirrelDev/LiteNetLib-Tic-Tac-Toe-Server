@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 using PoorMansECS.Systems;
-using Server.Input;
+using Server.ConsoleInput;
 
 namespace Server.UpdateLoop {
-    public class ServerLoop : IInputCommandsReceiver {
+    public class ServerLoop : IConsoleInputCommandsReceiver {
         private readonly List<IUpdateable> _updateables;
         private bool _isRunning;
 
@@ -23,7 +23,7 @@ namespace Server.UpdateLoop {
             }
         }
 
-        public void ReceiveInputCommand(InputCommand command) {
+        public void ReceiveInputCommand(ConsoleInputCommand command) {
             if (command.KeyInfo.Key == ConsoleKey.E) {
                 _isRunning = false;
             }

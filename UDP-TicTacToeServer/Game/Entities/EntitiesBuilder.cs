@@ -1,10 +1,8 @@
 ﻿using Game.Components;
-using Game.Entities;
 using PoorMansECS;
 using Server.Game.Components;
-using Server.Game.Entities;
 
-namespace Server.Game {
+namespace Server.Game.Entities {
     public class EntitiesBuilder {
         private readonly World _world;
 

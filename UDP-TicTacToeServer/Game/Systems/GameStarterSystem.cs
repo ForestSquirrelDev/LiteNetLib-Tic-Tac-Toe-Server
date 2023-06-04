@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using Game.Components;
-using Game.Entities;
 using PoorMansECS.Systems;
 using Server.Game.Components;
 using Server.Game.Entities;

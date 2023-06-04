@@ -5,10 +5,10 @@ using Server.Game.Systems.Events;
 using ServerShared.Shared.Network;
 
 namespace Server.Game.Systems.TurnInput {
-    public class InputHandlerSystem : SystemBase, INetMessageListener {
+    public class InputReceiverSystem : SystemBase, INetMessageListener {
         private IncomingMessagesPipe _incomingMessagesPipe;
 
-        public InputHandlerSystem(SystemsContext context) : base(context) { }
+        public InputReceiverSystem(SystemsContext context) : base(context) { }
 
         public void InjectDependencies(IncomingMessagesPipe incomingMessagesPipe) {
             _incomingMessagesPipe = incomingMessagesPipe;

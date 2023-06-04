@@ -1,6 +1,6 @@
 ﻿using PoorMansECS.Entities;
 
-namespace Game.Entities
+namespace Server.Game.Entities
 {
     public class Grid : Entity { }
 }

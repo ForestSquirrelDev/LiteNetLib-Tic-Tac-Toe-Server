@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Components;
-using Game.Entities;
 using LiteNetLib;
 using PoorMansECS.Systems;
 using Server.Game.Components;

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Game.Components;
-using Game.Entities;
 using LiteNetLib;
+using PoorMansECS;
 using PoorMansECS.Entities;
 using PoorMansECS.Systems;
 using Server.Game.Components;
@@ -31,36 +30,18 @@ namespace Server.Game.Systems.TurnInput {
             }
             var requestMessage = playerInput.RequestMessage;
 
-            var room = _context.World.Entities.GetFirst<Room>();
-            var nextTurn = room.GetComponent<NextTurnComponent>();
-            var associatedPlayer = _context.World.Entities.GetFirst<Player>(
-                p => p.GetComponent<AssociatedPeerComponent>().Peer.Id == playerInput.RequestMessage.AssociatedPeer.Id);
+            var associatedPlayer = _context.World.Entities.GetFirst<Player>(e => e.GetComponent<AssociatedPeerComponent>().Peer.Id == playerInput.RequestMessage.AssociatedPeer.Id);
             var associatedPeer = associatedPlayer.GetComponent<AssociatedPeerComponent>().Peer;
-            var playerSide = associatedPlayer.GetComponent<GameSideComponent>().GameSide;
-            Console.WriteLine($"Player input side: {playerInput.GameSide}. Next turn side: {nextTurn.NextTurnSide}");
-            if (playerSide != nextTurn.NextTurnSide) {
-                var responseMessage = new InputResponseMessage(false, InputResponseMessage.Reason.WrongTurn);
+            var (reject, reason) = NeedToReject(playerInput, _context.World);
+            if (reject) {
+                var responseMessage = new InputResponseMessage(false, reason);
                 _outgoingMessagesPipe.SendResponse(associatedPeer, requestMessage, responseMessage);
                 return;
             }
 
-            var gameState = room.GetComponent<GameStateComponent>().State;
-            if (gameState != GameStateComponent.GameState.Ongoing) {
-                var responseMessage = new InputResponseMessage(false, gameState == GameStateComponent.GameState.Idle 
-                    ? InputResponseMessage.Reason.GameNotStarted 
-                    : InputResponseMessage.Reason.GameFinished);
-                _outgoingMessagesPipe.SendResponse(associatedPeer, requestMessage, responseMessage);
-                return;
-            }
-
-            var grid = _context.World.Entities.GetFirst<Grid>();
-            var cellsComponent = grid.GetComponent<GridCellsComponent>();
-            var hasCell = grid.GetComponent<GridCellsComponent>().TryGetCell(playerInput.CellRow, playerInput.CellColumn, out var cell);
-            if (!hasCell) {
-                var responseMessage = new InputResponseMessage(false, InputResponseMessage.Reason.OutOfBounds);
-                _outgoingMessagesPipe.SendResponse(associatedPeer, requestMessage, responseMessage);
-                return;
-            }
+            var cellsComponent = _context.World.Entities.GetFirst<Grid>().GetComponent<GridCellsComponent>();
+            var cell = cellsComponent.GetCell(playerInput.CellRow, playerInput.CellColumn);
+            var room = _context.World.Entities.GetFirst<Room>();
             cell.SetOccupationInfo(playerInput.GameSide);
             
             UpdateGameState(cellsComponent, cell, room, playerInput.GameSide);
@@ -79,6 +60,34 @@ namespace Server.Game.Systems.TurnInput {
             var playerPeers = context.World.Entities.GetAll<Player>().Select(p => p.GetComponent<AssociatedPeerComponent>().Peer);
             outgoingMessagesPipe.SendToAllOneWay(playerPeers, inputFinishedMessage, DeliveryMethod.ReliableOrdered);
             context.EventBus.SendEvent(new TurnFinishedEvent(playerInput.GameSide));
+        }
+
+        private (bool reject, InputResponseMessage.Reason reason) NeedToReject(PlayerInputEvent playerInput, World world) {
+            var player = world.Entities.GetFirst<Player>(e => e.GetComponent<AssociatedPeerComponent>().Peer.Id == playerInput.RequestMessage.AssociatedPeer.Id);
+            var playerSide = player.GetComponent<GameSideComponent>().GameSide;
+            var room = world.Entities.GetFirst<Room>();
+            var nextTurn = room.GetComponent<NextTurnComponent>();
+            
+            if (playerSide != nextTurn.NextTurnSide) {
+                return (true, InputResponseMessage.Reason.WrongTurn);
+            }
+            
+            var gameState = room.GetComponent<GameStateComponent>().State;
+            if (gameState != GameStateComponent.GameState.Ongoing) {
+                return (true, gameState == GameStateComponent.GameState.Idle ? InputResponseMessage.Reason.GameNotStarted : InputResponseMessage.Reason.GameFinished);
+            }
+            
+            var grid = _context.World.Entities.GetFirst<Grid>();
+            var hasCell = grid.GetComponent<GridCellsComponent>().TryGetCell(playerInput.CellRow, playerInput.CellColumn, out var cell);
+            if (!hasCell) {
+                return (true, InputResponseMessage.Reason.OutOfBounds);
+            }
+            
+            if (cell.OccupationInfo.IsOccupied) {
+                return (true, InputResponseMessage.Reason.AlreadyOccupied);
+            }
+
+            return (false, InputResponseMessage.Reason.None);
         }
 
         protected override void OnStop() { }

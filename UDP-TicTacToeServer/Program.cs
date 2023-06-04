@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Server.Connection;
 using Server.Game;
-using Server.Input;
 using Server.UpdateLoop;
 using PoorMansECS.Systems;
+using Server.ConsoleInput;
 using ServerShared.Shared.Network;
 using Server.Shared.Network;
 
@@ -22,4 +21,3 @@ connectionManager.Start();
 serverLoop.RunMainLoop();
 
 connectionManager.Dispose();
-Console.WriteLine("Ahh yamete");
